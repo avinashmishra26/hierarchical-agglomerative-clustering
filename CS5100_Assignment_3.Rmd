@@ -1,0 +1,67 @@
+---
+title: "DA Assignment 3"
+---
+
+Task 1 and Task 2
+
+```{r}
+source('HC.R')
+data_set = as.matrix(t(read.table('nci.data.txt', header = FALSE, sep = "", dec = ".")))
+#data_set = as.matrix(t(read.table('sample.txt', header = FALSE, sep = " ")))
+labels = read.table('label.txt')
+K = nrow(unique(labels))
+#calculating similarity matrix for the data set
+original_sim_matrix = calculate_distance(data_set)
+#dim(original_sim_matrix)
+cluster <- list()
+for (data_pt in 1:nrow(data_set)) {
+  cluster[[data_pt]] <- c(data_pt)
+}
+#Single(Min) Linkage Method
+print('Single(Min)')
+result_1 = single_method(original_sim_matrix, K, cluster)
+for (idx in 1:length(result_1)) {
+  print(paste0("{", result_1[[idx]],"}"))
+}
+#complete(Max) Linkage Method
+print('complete(Max)')
+result_2 = complete_method(original_sim_matrix, K, cluster)
+for (idx in 1:length(result_2)) {
+  print(paste0("{", result_2[[idx]],"}"))
+}
+#AVG Linkage Method
+print('AVG')
+result_3 = avg_method(original_sim_matrix, K, cluster)
+for (idx in 1:length(result_3)) {
+  print(paste0("{", result_3[[idx]],"}"))
+}
+#CENTROID Linkage Method
+print('CENTROID')
+result_4 = centroid_method(data_set,original_sim_matrix, K, cluster)
+for (idx in 1:length(result_4)) {
+  print(paste0("{", result_4[[idx]],"}"))
+}
+```
+
+Task 4
+
+```{r}
+set.seed(2605)
+scaled_data_set = scale(data_set)
+km.out = kmeans(scaled_data_set, centers = K, iter.max = 100, nstart=20)
+print('cluster assignments of 64 data points present in nic dataset')
+print(as.vector(km.out$cluster))
+
+plot(data_set, col=(km.out$cluster+1), main="K-Means Clustering Results with K=14", xlab="", ylab="", pch=20, cex=2)
+```
+```{r}
+#Elbow or Knee Method 
+set.seed(2605)
+scaled_data_set = scale(data_set)
+k.range <- 25
+loss <- sapply(1:k.range, function(k){ kmeans(scaled_data_set, k, nstart=20, iter.max = 100)$tot.withinss})
+plot(1:k.range, loss, type="b", pch = 19, frame = FALSE, xlab="K (Number of clusters)", ylab=
+       "Loss(sum of squares)")
+```
+
+
